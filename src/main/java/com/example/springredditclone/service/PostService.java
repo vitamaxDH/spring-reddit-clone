@@ -35,7 +35,9 @@ public class PostService {
     public void save(PostRequest postRequest) {
         Subreddit subreddit = subredditRepository.findByName(postRequest.getSubredditName())
                 .orElseThrow(() -> new SubredditNotFoundException(postRequest.getSubredditName()));
-        postRepository.save(postMapper.map(postRequest, subreddit, authService.getCurrentUser()));
+        User currentUser = authService.getCurrentUser();
+
+        postRepository.save(postMapper.map(postRequest, subreddit, currentUser));
     }
 
     @Transactional(readOnly = true)
@@ -57,7 +59,9 @@ public class PostService {
     public List<PostResponse> getPostsBySubreddit(Long subredditId) {
         Subreddit subreddit = subredditRepository.findById(subredditId)
                 .orElseThrow(() -> new SubredditNotFoundException(subredditId.toString()));
+        log.info("subredditId -> {}", subredditId);
         List<Post> posts = postRepository.findAllBySubreddit(subreddit);
+        log.info("posts -> {}", posts);
         return posts.stream().map(postMapper::mapToDto).collect(toList());
     }
 
