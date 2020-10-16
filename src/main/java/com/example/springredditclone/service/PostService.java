@@ -59,7 +59,7 @@ public class PostService {
     public List<PostResponse> getPostsBySubreddit(Long subredditId) {
         Subreddit subreddit = subredditRepository.findById(subredditId)
                 .orElseThrow(() -> new SubredditNotFoundException(subredditId.toString()));
-        log.info("subredditId -> {}", subredditId);
+        log.info("subreddit -> {}", subreddit);
         List<Post> posts = postRepository.findAllBySubreddit(subreddit);
         log.info("posts -> {}", posts);
         return posts.stream().map(postMapper::mapToDto).collect(toList());
