@@ -16,7 +16,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @Entity
 @Builder
-public class Vote {
+public class  Vote {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long voteId;

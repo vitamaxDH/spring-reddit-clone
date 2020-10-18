@@ -5,17 +5,34 @@ import com.example.springredditclone.model.Post;
 import com.example.springredditclone.model.PostResponse;
 import com.example.springredditclone.model.Subreddit;
 import com.example.springredditclone.model.User;
+import com.example.springredditclone.repository.CommentRepository;
+import com.example.springredditclone.repository.VoteRepository;
+import com.example.springredditclone.service.AuthService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = "spring")
-public interface PostMapper {
+public abstract class PostMapper {
+
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private VoteRepository voteRepository;
+    @Autowired
+    private AuthService authService;
+
     @Mapping(target = "createdDate", expression = "java(java.time.Instant.now())")
     @Mapping(target = "description", source = "postRequest.description")
-    Post map(PostRequest postRequest, Subreddit subreddit, User user);
+    @Mapping(target = "subreddit", source = "subreddit")
+    @Mapping(target = "voteCount", constant = "0")
+    @Mapping(target = "user", source = "user")
+    public abstract Post map(PostRequest postRequest, Subreddit subreddit, User user);
 
     @Mapping(target = "id", source = "postId")
     @Mapping(target = "subredditName", source = "subreddit.name")
     @Mapping(target = "userName", source = "user.username")
-    PostResponse mapToDto(Post post);
+    @Mapping(target = "commentCount", expression = "java(commentCount(post))")
+    @Mapping(target = "duration", expression = "java(getDuration(post))")
+    public abstract PostResponse mapToDto(Post post);
 }
